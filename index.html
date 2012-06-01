@@ -28,7 +28,7 @@
         var CANVAS_HEIGHT = canvas.height;
         var FPS = 30;
         var ACTIVE_BULLETS = 0;
-        var MAX_BULLETS = 4;
+        var MAX_BULLETS = 20;
         
         var playerBullets = [];  //array to hold bullet objects
         var enemies = []; //array to hold enemy objects
@@ -166,11 +166,28 @@
         
           // Shoot
           // Bullet constraint added by graceR
-          if(keydown.space & (ACTIVE_BULLETS < MAX_BULLETS)) {
-            player.shoot();
-            ACTIVE_BULLETS = ACTIVE_BULLETS + 1;
-          }
-        
+          //if(keydown.space & (ACTIVE_BULLETS < MAX_BULLETS)) {
+          //  player.shoot();
+          //  ACTIVE_BULLETS = ACTIVE_BULLETS + 1;
+          //}
+		 
+		 
+	//Makes it so each keypress of the spacebar only fires 1 bullet 
+	//Added and adapted from old code above by Jeddychan
+	if(keydown.space) {
+		CANSHOOT+=1;
+		if(CANSHOOT>2){CANSHOOT=2;};
+	}
+		  
+	if(!keydown.space){
+		CANSHOOT=0;
+	}
+		  
+	if(CANSHOOT==1&&(ACTIVE_BULLETS < MAX_BULLETS)){
+		player.shoot()
+		ACTIVE_BULLETS = ACTIVE_BULLETS + 1;
+	}
+
           // Move Left, Right, Up, Down
           // Wrapping added by finnR
           if(keydown.left) {
