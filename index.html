@@ -1,0 +1,284 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <title>Space Game Tutorial - WorthwhileGames.org</title>
+    <link href="css/game.css" media="all" rel="stylesheet" type="text/css"/>
+    <script language="javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript"></script>
+    <script language="javascript" src="javascripts/jquery.hotkeys.js" type="text/javascript"></script>
+    <script language="javascript" src="javascripts/key_status.js" type="text/javascript"></script>
+    <script language="javascript" src="javascripts/sprite.js" type="text/javascript"></script>
+    <script language="javascript" src="javascripts/sound.js" type="text/javascript"></script>
+  </head>
+  <body id="space-game-body">
+  
+  <!-- Original tutorial by HTML5Rocks @ http://www.html5rocks.com/en/tutorials/canvas/notearsgame/ -->
+  <!-- Updated tutorial by WorthwhileGames.org -->
+  <!-- WorthwhileGames adds no restrictions on the use of the code. -->
+  <!-- The Space Ship image and geometric "debris" image are (c) 2005 WorthwhileGames.org -->
+  
+  	<canvas id="space-game-canvas" width="630" height="580"></canvas>
+
+    <script type='text/javascript'>
+      //<![CDATA[
+      
+      	var canvas = document.getElementById("space-game-canvas");  
+ 		var canvas_ctx = canvas.getContext("2d"); 
+ 		
+        var CANVAS_WIDTH = canvas.width;
+        var CANVAS_HEIGHT = canvas.height;
+        var FPS = 30;
+        var ACTIVE_BULLETS = 0;
+        var MAX_BULLETS = 4;
+        
+        var playerBullets = [];  //array to hold bullet objects
+        var enemies = []; //array to hold enemy objects
+        
+        var wwg_logo = Sprite("WwGLogo");
+        
+        // Player Object
+        var player = {
+          x: 50,
+          y: 530,
+          width: 20,
+          height: 30
+        };
+
+        player.sprite = Sprite("player");
+        
+        player.draw = function() {
+          this.sprite.draw(canvas_ctx, this.x, this.y);
+        };
+        
+        player.shoot = function() {
+          Sound.play("shoot");
+        
+          var bulletPosition = this.midpoint();
+        
+          playerBullets.push(Bullet({
+            speed: 10,
+            x: bulletPosition.x,
+            y: bulletPosition.y
+          }));
+        };
+        
+        player.midpoint = function() {
+          return {
+            x: this.x + this.width/2,
+            y: this.y + this.height/2
+          };
+        };
+
+        player.explode = function() {
+          this.active = false;
+        };
+        
+        // Bullet Object
+        function Bullet(I) {
+          I.active = true;
+        
+          I.xVelocity = 0 ;
+          I.yVelocity = -I.speed;
+          I.width = 3;
+          I.height = 7;
+          I.color = "#3AF";
+        
+          I.inBounds = function() {
+            return I.x >= 0 && I.x <= CANVAS_WIDTH &&
+              I.y >= 0 && I.y <= CANVAS_HEIGHT;
+          };
+        
+          I.draw = function() {
+            canvas_ctx.fillStyle = this.color;
+            canvas_ctx.fillRect(this.x, this.y, this.width, this.height);
+          };
+          
+          I.update = function() {
+            I.x += I.xVelocity;
+            I.y += I.yVelocity;
+            
+            if(!I.inBounds())
+            {
+            	I.active = false;
+            	ACTIVE_BULLETS = ACTIVE_BULLETS - 1;  //makes another bullet available
+            }
+          };
+        
+          I.explode = function() {
+            this.active = false;
+          };
+        
+          return I;
+        }
+        
+        // Enemy Object
+        function Enemy(I) {
+          I = I || {};
+        
+          I.active = true;
+          I.age = Math.floor(Math.random() * 128);
+          I.x = CANVAS_WIDTH / 4 + Math.random() * CANVAS_WIDTH / 2;
+          I.y = 0;
+          I.xVelocity = 0
+          I.yVelocity = 2;
+        
+          I.width = 32;
+          I.height = 32;
+        
+          I.inBounds = function() {
+            return I.x >= 0 && I.x <= CANVAS_WIDTH &&
+              I.y >= 0 && I.y <= CANVAS_HEIGHT;
+          };
+        
+          I.sprite = Sprite("debris");
+        
+          I.draw = function() {
+            this.sprite.draw(canvas_ctx, this.x, this.y);
+          };
+        
+          I.update = function() {
+            I.x += I.xVelocity;
+            I.y += I.yVelocity;
+        	
+        	// Cool: The function, sin(), generates a smooth oscillation
+            I.xVelocity = 3 * Math.sin(I.age * Math.PI / 64);
+        
+            I.age++;
+        
+            I.active = I.active && I.inBounds();
+          };
+        
+          I.explode = function() {
+            Sound.play("explosion");
+        
+            this.active = false;
+          };
+        
+          return I;
+        };
+        
+        // The Main Loop
+        setInterval(function() {
+          update();
+          draw();
+        }, 1000/FPS);
+        
+        function update() {
+        
+          // Shoot
+          // Bullet constraint added by graceR
+          if(keydown.space & (ACTIVE_BULLETS < MAX_BULLETS)) {
+            player.shoot();
+            ACTIVE_BULLETS = ACTIVE_BULLETS + 1;
+          }
+        
+          // Move Left, Right, Up, Down
+          // Wrapping added by finnR
+          if(keydown.left) {
+            player.x -= 5;
+            if(player.x <= 0)
+            {
+            player.x = CANVAS_WIDTH
+            }
+          } 
+        
+          if(keydown.right) {
+            player.x += 5;
+        	if (player.x >= CANVAS_WIDTH)
+            {
+            	player.x = 10;
+            }
+
+          }
+          
+          if(keydown.up) {
+            player.y -= 5; 
+            if (player.y <= 0)
+            {
+          		player.y = CANVAS_HEIGHT - 20;
+	        }
+          }
+        
+          if(keydown.down) {
+            player.y += 5;
+        	if (player.y >= CANVAS_HEIGHT) 
+        	{
+        		player.y = 0;
+        	}
+		  }
+          
+          // Update Bullets (i.e. move them)
+          playerBullets.forEach(function(bullet) {
+            bullet.update();
+          });
+        
+          // Remove inactive bullets (i.e. ones that have already hit something)
+          playerBullets = playerBullets.filter(function(bullet) {
+            return bullet.active;
+          });
+          
+          // Update Enemies (i.e. move them)
+          enemies.forEach(function(enemy) {
+            enemy.update();
+          });
+          
+          // Remove inactive Enemies (i.e. ones that have been hit)
+          enemies = enemies.filter(function(enemy) {
+            return enemy.active;
+          });
+        
+          handleCollisions();
+        
+          // Spawn new enemies
+          if(Math.random() < 0.05) {
+            enemies.push(Enemy());
+          }
+        }
+        
+        // Rendering (drawing)
+        function draw() {
+          canvas_ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+          player.draw();
+          
+          playerBullets.forEach(function(bullet) {
+            bullet.draw();
+          });
+        
+          enemies.forEach(function(enemy) {
+            enemy.draw();
+          });
+          
+          wwg_logo.draw(canvas_ctx, 20, 10);
+        }
+        
+        // Collision Handling
+        function collides(a, b) {
+          return a.x < b.x + b.width &&
+            a.x + a.width > b.x &&
+            a.y < b.y + b.height &&
+            a.y + a.height > b.y;
+        }
+        
+        function handleCollisions() {
+          playerBullets.forEach(function(bullet) {
+            enemies.forEach(function(enemy) {
+              if(collides(bullet, enemy)) {
+                enemy.explode();
+                bullet.active = false;
+                ACTIVE_BULLETS = ACTIVE_BULLETS - 1;
+              }
+            });
+          });
+        
+          enemies.forEach(function(enemy) {
+            if(collides(enemy, player)) {
+              enemy.explode();
+              player.explode();
+            }
+          });
+        }
+        
+      //]]>
+    </script>
+    
+  </body>
+</html>

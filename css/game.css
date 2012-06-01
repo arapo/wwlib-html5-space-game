@@ -1,0 +1,13 @@
+/* css for the space game elements */
+
+#space-game-body {
+	text-align: center;
+	background-color: black;
+	}
+		
+		#space-game-canvas {
+			background-image: url(../img/starnetblog_cloudy_starfield_texture8.jpg);
+			background-repeat: repeat;
+			background-position: left top;
+			background-color: #000000;
+			}
