@@ -16,6 +16,8 @@ http://www.starnetblog.com/tileable/seamless-cloudy-star-field-textures/
 
 Special Thanks:
 
-Thanks to graceR (11) for adding the bullet constraint code.
+Thanks to graceR for adding the MAX_BULLETS constraint code.
 
-Thanks to finnR (9) for make the space ship wrap when it passes the edge of the canvas.
+Thanks to finnR for make the space ship wrap when it passes the edge of the canvas.
+
+Thanks to JeddyChan for adding the CANSHOOT constrain allowing one bullet per key press
