@@ -162,94 +162,88 @@
           draw();
         }, 1000/FPS);
         
-        function update() {
-        
-          // Shoot
-          // Bullet constraint added by graceR
-          //if(keydown.space & (ACTIVE_BULLETS < MAX_BULLETS)) {
-          //  player.shoot();
-          //  ACTIVE_BULLETS = ACTIVE_BULLETS + 1;
-          //}
-		 
-		 
-	//Makes it so each keypress of the spacebar only fires 1 bullet 
-	//Added and adapted from old code above by Jeddychan
-	if(keydown.space) {
-		CANSHOOT+=1;
-		if(CANSHOOT>2){CANSHOOT=2;};
-	}
-		  
-	if(!keydown.space){
-		CANSHOOT=0;
-	}
-		  
-	if(CANSHOOT==1&&(ACTIVE_BULLETS < MAX_BULLETS)){
-		player.shoot()
-		ACTIVE_BULLETS = ACTIVE_BULLETS + 1;
-	}
+		function update() {
+		
+			// Shoot
+			// MAX_BULLETS constraint added by graceR
+			// CANSHOOT constraing added by Jeddychan
+			// Makes it so each keypress of the spacebar only fires 1 bullet 
+			if(keydown.space) {
+				CANSHOOT+=1;
+				if(CANSHOOT>2){CANSHOOT=2;};
+			}
+				  
+			if(!keydown.space){
+				CANSHOOT=0;
+			}
+				  
+			if(CANSHOOT==1&&(ACTIVE_BULLETS < MAX_BULLETS)){
+				player.shoot()
+				ACTIVE_BULLETS = ACTIVE_BULLETS + 1;
+			}
 
-          // Move Left, Right, Up, Down
-          // Wrapping added by finnR
-          if(keydown.left) {
-            player.x -= 5;
-            if(player.x <= 0)
-            {
-            player.x = CANVAS_WIDTH
-            }
-          } 
-        
-          if(keydown.right) {
-            player.x += 5;
-        	if (player.x >= CANVAS_WIDTH)
-            {
-            	player.x = 10;
-            }
-
-          }
-          
-          if(keydown.up) {
-            player.y -= 5; 
-            if (player.y <= 0)
-            {
-          		player.y = CANVAS_HEIGHT - 20;
-	        }
-          }
-        
-          if(keydown.down) {
-            player.y += 5;
-        	if (player.y >= CANVAS_HEIGHT) 
-        	{
-        		player.y = 0;
-        	}
-		  }
-          
-          // Update Bullets (i.e. move them)
-          playerBullets.forEach(function(bullet) {
-            bullet.update();
-          });
-        
-          // Remove inactive bullets (i.e. ones that have already hit something)
-          playerBullets = playerBullets.filter(function(bullet) {
-            return bullet.active;
-          });
-          
-          // Update Enemies (i.e. move them)
-          enemies.forEach(function(enemy) {
-            enemy.update();
-          });
-          
-          // Remove inactive Enemies (i.e. ones that have been hit)
-          enemies = enemies.filter(function(enemy) {
-            return enemy.active;
-          });
-        
-          handleCollisions();
-        
-          // Spawn new enemies
-          if(Math.random() < 0.05) {
-            enemies.push(Enemy());
-          }
-        }
+			// Move Left, Right, Up, Down
+			// Wrapping added by finnR
+			if(keydown.left) {
+			player.x -= 5;
+			if(player.x <= 0)
+			{
+			player.x = CANVAS_WIDTH
+			}
+			} 
+			
+			if(keydown.right) {
+			player.x += 5;
+			if (player.x >= CANVAS_WIDTH)
+			{
+				player.x = 10;
+			}
+			
+			}
+			
+			if(keydown.up) {
+			player.y -= 5; 
+			if (player.y <= 0)
+			{
+				player.y = CANVAS_HEIGHT - 20;
+			}
+			}
+			
+			if(keydown.down) {
+			player.y += 5;
+			if (player.y >= CANVAS_HEIGHT) 
+			{
+				player.y = 0;
+			}
+			}
+			
+			// Update Bullets (i.e. move them)
+			playerBullets.forEach(function(bullet) {
+			bullet.update();
+			});
+			
+			// Remove inactive bullets (i.e. ones that have already hit something)
+			playerBullets = playerBullets.filter(function(bullet) {
+			return bullet.active;
+			});
+			
+			// Update Enemies (i.e. move them)
+			enemies.forEach(function(enemy) {
+			enemy.update();
+			});
+			
+			// Remove inactive Enemies (i.e. ones that have been hit)
+			enemies = enemies.filter(function(enemy) {
+			return enemy.active;
+			});
+			
+			handleCollisions();
+			
+			// Spawn new enemies
+			if(Math.random() < 0.05) {
+			enemies.push(Enemy());
+			}
+		}
         
         // Rendering (drawing)
         function draw() {
